@@ -77,6 +77,9 @@ public class CarServiceImpl implements CarService {
         }
 
         if(carDto.getRentedFrom() != null && carDto.getRentedTo() != null) {
+            if(carDto.getRentedFrom().isAfter(carDto.getRentedTo())) {
+                throw new InvalidParameterException("Operation failed. Rent start date can not after rent end date");
+            }
             car.setRentedTo(carDto.getRentedTo());
             car.setRentedFrom(carDto.getRentedFrom());
         }
@@ -95,11 +98,16 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarDto rentCar(CarDto carDto) {
+
         if(carDto.getId() == null
         || carDto.getRentedTo() == null
         || carDto.getRentedFrom() == null
         || carDto.getCustomerName() == null) {
             throw new InvalidParameterException("Operation failed. Car ID, Customer Name, Rent Date from and Rent Date to can't be NULL");
+        }
+
+        if(carDto.getRentedFrom().isAfter(carDto.getRentedTo())) {
+            throw new InvalidParameterException("Operation failed. Rent start date can not after rent end date");
         }
 
         Car car = getCar(carDto.getId());
